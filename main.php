@@ -2,7 +2,7 @@
 <html class="no-js" lang="ja">
 <head>
 <meta charset="utf-8">
-<title>CRUD_test</title>
+<title>CRUD</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- BootStrap -->
@@ -38,13 +38,15 @@
       <table class="table">
         <tr>
           <th>Name</th>
-          <th>Location</th>
+          <th>Cost</th>
+          <th>Color</th>
           <th>Action</th>
         </tr>
         <?php while($row = $result->fetch_assoc()): ?>
         <tr>
           <td><?php echo $row['name'] ?></td>
-          <td><?php echo $row['location'] ?></td>
+          <td><?php echo $row['cost'] ?></td>
+          <td><?php echo $row['color'] ?></td>
           <td>
             <a href="main.php?edit=<?php echo $row['id'] ?>" class="btn btn-info">Edit</a>
             <a href="process.php?delete=<?php echo $row['id'] ?>" class="btn btn-danger">Delete</a>
@@ -62,11 +64,15 @@
         <input type="hidden" name="id" value="<?php echo $id ?>">
         <div class="mt-3 mb-3">
           <label>Name</label>
-          <input type="text" class="form-control" name="name" value="<?php echo $name ?>" placeholder="Enter your name">
+          <input type="text" class="form-control" name="name" value="<?php echo $name ?>" placeholder="例）スライム">
         </div>
         <div class="mb-3">
-          <label>Location</label>
-          <input type="text" class="form-control" name="location" value="<?php echo $location ?>" placeholder="Enter your location">
+          <label>Cost</label>
+          <input type="text" class="form-control" name="cost" value="<?php echo $cost ?>" placeholder="例）3">
+        </div>
+        <div class="mb-3">
+          <label>Color</label>
+          <input type="text" class="form-control" name="color" value="<?php echo $color ?>" placeholder="例）黄">
         </div>
         <div>
           <!--ボタン制御-->

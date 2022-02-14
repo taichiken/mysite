@@ -11,8 +11,9 @@ $id = 0;
 //Saveボタン押下時の制御
 if(isset($_POST['save'])){
     $name = $_POST['name'];
-    $location = $_POST['location'];
-    $mysqli->query("insert into data(name, location) values('$name', '$location')");
+    $cost = $_POST['cost'];
+    $color = $_POST['color'];
+    $mysqli->query("insert into data(name, cost, color) values('$name', '$cost', '$color')");
 
     $_SESSION['message'] = "Record has been saved!";
     $_SESSION['msg_type'] = "success";
@@ -43,7 +44,8 @@ if(isset($_GET['edit'])){
         $update = true;
         $row = $result->fetch_assoc();
         $name = $row['name'];
-        $location = $row['location'];
+        $cost = $row['cost'];
+        $color = $row['color'];
     }
 }
 
