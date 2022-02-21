@@ -10,8 +10,8 @@ $result = $mysqli->query("
   select
     main.date
     ,main.weeks
-    ,from_time
-    ,to_time
+    ,left(right(CONCAT('000000',from_time),6),4) as from_time
+    ,left(right(CONCAT('000000',to_time),6),4) as to_time
   from T_calendar as main
   left join(
     select date,min(time) as from_time from T_log where pattern='1' group by date
@@ -23,6 +23,36 @@ $result = $mysqli->query("
   order by main.date;
 ");
 
+//--------------------------------------------------
+//コロンセット
+//--------------------------------------------------
+function insertColon($prm){
+  if($prm!=''){
+    $prm = substr($prm,0,2).':'.substr($prm,2,2);
+  }
+  return $prm;
+}
+
+
+//--------------------------------------------------
+//コロンセット
+//--------------------------------------------------
+function insertSlash($prm){
+  return substr($prm,4,2).'/'.substr($prm,-2);
+}
+
+
+//--------------------------------------------------
+//コロンセット
+//--------------------------------------------------
+function getWorkTime($prm1,$prm2){
+  $total = '';
+  if($prm1!=''&&$prm2!=''){
+    $total = ((substr($prm2,0,2)*60)+substr($prm2,2,2)) - ((substr($prm1,0,2)*60)+substr($prm1,2,2));
+    $total = insertColon(substr('00'.floor($total/60),-2).substr('00'.floor($total%60),-2));
+  }
+  return $total;
+}
 
 //--------------------------------------------------
 //色取得
@@ -77,10 +107,14 @@ function getWeek($prm){
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th scope="col">編集<br>申請</th>
-        <th scope="col">日付</th>
-        <th scope="col">出勤</th>
-        <th scope="col">退勤</th>
+        <th scope="col" width="5%">編集<br>申請</th>
+        <th scope="col" width="15%">日付</th>
+        <th scope="col" width="5%">締</th>
+        <th scope="col" width="35%">スケジュール</th>
+        <th scope="col" width="10%">出勤</th>
+        <th scope="col" width="10%">退勤</th>
+        <th scope="col" width="10%">実働時間</th>
+        <th scope="col" width="10%">労働時間<br>有給含</th>
       </tr>
     </thead>
     <tbody>
@@ -88,10 +122,14 @@ function getWeek($prm){
       <tr>
         <th scope="row"></th>
         <td class="<?php echo getColor($row['weeks']) ?>">
-          <?php echo substr($row['date'],4,2).'/'.substr($row['date'],-2).getWeek($row['weeks']) ?>
+          <?php echo insertSlash($row['date']).getWeek($row['weeks']) ?>
         </td>
-        <td><?php echo $row['from_time'] ?></td>
-        <td><?php echo $row['to_time'] ?></td>
+        <td></td>
+        <td></td>
+        <td><?php echo insertColon($row['from_time']) ?></td>
+        <td><?php echo insertColon($row['to_time']) ?></td>
+        <td><?php echo getWorkTime($row['from_time'],$row['to_time']) ?></td>
+        <td></td>
       </tr>
       <?php endwhile ?>
     </tbody>

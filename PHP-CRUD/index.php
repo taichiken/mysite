@@ -9,6 +9,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <!--Font Awesome-->
 <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet">
+<link href="./css/main.css" rel="stylesheet">
 <meta name="theme-color" content="#fafafa">
 </head>
 <body>
@@ -46,9 +47,9 @@
         <tr>
           <td><?php echo $row['name'] ?></td>
           <td><?php echo $row['cost'] ?></td>
-          <td><?php echo $row['color'] ?></td>
+          <td class="<?php echo $row['color'] ?>">●</td>
           <td>
-            <a href="main.php?edit=<?php echo $row['id'] ?>" class="btn btn-info">Edit</a>
+            <a href="index.php?edit=<?php echo $row['id'] ?>" class="btn btn-info">Edit</a>
             <a href="process.php?delete=<?php echo $row['id'] ?>" class="btn btn-danger">Delete</a>
           </td>
         </tr>
@@ -72,7 +73,14 @@
         </div>
         <div class="mb-3">
           <label>Color</label>
-          <input type="text" class="form-control" name="color" value="<?php echo $color ?>" placeholder="例）黄">
+          <select class="form-select" name="color">
+            <option value="">--</option>
+            <option value="red">赤</option>
+            <option value="blue">青</option>
+            <option value="yellow">黄</option>
+            <option value="purple">紫</option>
+            <option value="green">緑</option>
+          </select>
         </div>
         <div>
           <!--ボタン制御-->

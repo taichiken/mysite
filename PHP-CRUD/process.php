@@ -19,7 +19,7 @@ if(isset($_POST['save'])){
     $_SESSION['msg_type'] = "success";
 
     //リダイレクト処理
-    header("location: main.php");
+    header("location: index.php");
     exit();
 }
 
@@ -32,7 +32,7 @@ if(isset($_GET['delete'])){
     $_SESSION['msg_type'] = "danger";
 
     //リダイレクト処理
-    header("location: main.php");
+    header("location: index.php");
     exit();
 }
 
@@ -53,14 +53,15 @@ if(isset($_GET['edit'])){
 if(isset($_POST['update'])){
     $id = $_POST['id'];
     $name = $_POST['name'];
-    $location = $_POST['location'];
-    $mysqli->query("update data set name='$name', location='$location' where id=$id");
+    $cost = $_POST['cost'];
+    $color = $_POST['color'];
+    $mysqli->query("update data set name='$name', cost='$cost', color='$color' where id=$id");
 
     $_SESSION['message'] = "Record has been updated!";
     $_SESSION['msg_type'] = "warning";
 
     //リダイレクト処理
-    header("location: main.php");
+    header("location: index.php");
     exit();
 }
 ?>
