@@ -65,7 +65,9 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
   <form action="" method="POST" novalidate>
     <div class="m-3">
       <?php if($message!=''):?>
-      <h3 class="text-success"><?php echo $message ?></h3>
+      <div class="alert alert-warning">
+        <p class="text-success m-0 h5"><?php echo $message ?></p>
+      </div>
       <?php endif; ?>
       <h1>お問い合わせ</h1>
     </div>

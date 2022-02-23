@@ -15,6 +15,7 @@
 <body>
   <?php require_once('db_info.php'); ?>
   <?php require_once('process.php'); ?>
+  <?php require_once('function.php'); ?>
 
   <!--**********************************************************************
   処理に対するメッセージを表示
@@ -74,12 +75,12 @@
         <div class="mb-3">
           <label>Color</label>
           <select class="form-select" name="color">
-            <option value="">--</option>
-            <option value="red">赤</option>
-            <option value="blue">青</option>
-            <option value="yellow">黄</option>
-            <option value="purple">紫</option>
-            <option value="green">緑</option>
+            <option value="" <?php echo selectPulldown('',$color) ?>>--</option>
+            <option value="red" <?php echo selectPulldown('red',$color) ?>>赤</option>
+            <option value="blue" <?php echo selectPulldown('blue',$color) ?>>青</option>
+            <option value="yellow" <?php echo selectPulldown('yellow',$color) ?>>黄</option>
+            <option value="purple" <?php echo selectPulldown('purple',$color) ?>>紫</option>
+            <option value="green" <?php echo selectPulldown('green',$color) ?>>緑</option>
           </select>
         </div>
         <div>
