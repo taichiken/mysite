@@ -4,6 +4,8 @@
 //--------------------------------------------------
 function insertColon($prm){
   if($prm!=''){
+    //6桁補正
+    $prm = substr('000000'.$prm,-6);
     $prm = substr($prm,0,2).':'.substr($prm,2,2);
   }
   return $prm;
@@ -14,7 +16,12 @@ function insertColon($prm){
 //スラッシュセット
 //--------------------------------------------------
 function insertSlash($prm){
-  return substr($prm,4,2).'/'.substr($prm,-2);
+  if(mb_strlen($prm)==4){
+    $insertSlash = substr($prm,4,2).'/'.substr($prm,-2);
+  }else{
+    $insertSlash = substr($prm,0,4).'/'.substr($prm,4,2).'/'.substr($prm,-2);
+  }
+  return $insertSlash;
 }
 
 

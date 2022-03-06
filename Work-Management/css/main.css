@@ -6,17 +6,84 @@ body{
   margin: 0;
 }
 
+.text-center{text-align: center;}
+.text-right{text-align: right;}
+.align-middle{vertical-align: middle;}
+/* スクロール時固定 */
+.sticky{
+  position: -webkit-sticky; /*Safariブラウザ用*/
+  position: sticky;
+  top: 0;
+}
+
+
+/*-----------------------------------------------------------------------------------
+index.php
+-----------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------
+出退勤ボタン
+---------------------------------------------------------------*/
 .work-btn{
   padding: 80px;
   border-radius: 50%;
   font-size: 50px;
 }
+/*---------------------------------------------------------------
+休憩ボタン
+---------------------------------------------------------------*/
 .rest-btn{
   padding: 40px;
   border-radius: 50%;
   font-size: 20px;
 }
-.text-center{text-align: center;}
-.text-right{text-align: right;}
-.header{position : fixed;}
-.align-middle{vertical-align: middle;}
+
+
+
+/*-----------------------------------------------------------------------------------
+共通
+-----------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------
+ヘッダー
+---------------------------------------------------------------*/
+.header{
+  margin-bottom: 20px;
+  border-bottom: solid 1px #bbbbbb;
+}
+.header-menu ul{
+  margin: 0;
+  padding: 0;
+  list-style: none; /* 「・」削除 */
+}
+.header-menu li a{
+  display: block; /* アンカーが機能する範囲を広げる */
+  padding: 15px;
+  color: #000000;
+  font-size: 14px;
+  text-decoration: none; /* アンカーの下線を消す */
+}
+.header-menu li a:hover{opacity: 0.8;}
+.header-menu ul:after{
+  /* 後続の要素が後ろに回り込むのを防ぐ */
+  content: "";
+  display: block;
+  clear: both;
+}
+.header-menu li{
+  float: left;
+  width: auto;
+}
+/* ホームアンカー */
+.header-menu li:nth-child(1) a{
+  border: solid 1px #009966;
+  background-color: #009966;
+  color: #eeeeee;
+}
+/* 戻るアンカー */
+.header-menu li:nth-child(2) a{
+  border-top: solid 1px #bbbbbb;
+  border-left: solid 1px #bbbbbb;
+  border-right: solid 1px #bbbbbb;
+  color: #bbbbbb;
+  padding-left: 50px;
+  padding-right: 50px;
+}

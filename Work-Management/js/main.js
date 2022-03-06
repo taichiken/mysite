@@ -19,3 +19,31 @@ const setNowTime = () =>{
 const refresh = () =>{
   setTimeout(setNowTime,1000);
 }
+
+
+//--------------------------------------------------
+//コロンセット
+//--------------------------------------------------
+const insertColon = ($prm) =>{
+  let return_value = '';
+  if($prm.value.length==4){
+    return_value = $prm.value.substr(0,2)+':'+$prm.value.substr(2,2);
+  }
+  $prm.value = return_value;
+}
+
+//--------------------------------------------------
+//コロン外す
+//--------------------------------------------------
+const removeColon = ($prm) =>{
+  let return_value = $prm.value.replace(":","");
+  $prm.value = return_value;
+}
+
+//--------------------------------------------------
+//数値以外除外
+//--------------------------------------------------
+const removeNotNum = ($prm) =>{
+  let return_value = $prm.value.replace(/[^0-9]/,"");
+  $prm.value = return_value;
+}
