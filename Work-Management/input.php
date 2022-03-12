@@ -1,125 +1,136 @@
+<?php
+//セッション開始
+session_start();
+
+//テスト
+//echo $_SERVER['REQUEST_METHOD'].'(session)';
+
+
+//DB接続
+require_once('db_info.php');
+
+//ファンクション
+require_once('function.php');
+
+//パラメータ受け取り
+$date = $_GET['set_date'];
+
+
+//--------------------------------------------------
+//曜日取得
+//--------------------------------------------------
+$result = $mysqli->query("
+  select * from T_calendar
+  where date=".$date."
+");
+$row = $result->fetch_array(MYSQLI_ASSOC);
+$weeks = getWeek($row['weeks']);
+$result->close();
+
+?>
 <!doctype html>
 <html class="no-js" lang="ja">
 <head>
 <meta charset="utf-8">
-<title>勤務時間入力画面</title>
+<title>休暇登録画面</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="./css/main.css" rel="stylesheet">
 <!-- BootStrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <!--Font Awesome-->
 <link href="https://use.fontawesome.com/releases/v6.0.0/css/all.css" rel="stylesheet">
+<link href="./css/main.css" rel="stylesheet">
 <meta name="theme-color" content="#fafafa">
 </head>
 <body>
-<div class="container m-5">
-  <div class="row div_border pt-4 pb-4">
-    <div class="col">スケジュール編集</div>
+
+<!--***************************************************************************
+ヘッダー
+***************************************************************************-->
+<div class="header">
+  <div class="header-menu">
+    <ul>
+      <li><a href="./index.php"><i class="fa-solid fa-house"></i></a></li>
+      <li><a href="javascript:backRedirect(<?php echo $date ?>);"><i class="fa-solid fa-angle-left"></i>&nbsp;戻る</a></li>
+    </ul>
   </div>
-  <div class="row div_border pt-3 pb-3">
-    <div class="col-3">パターン</div>
-    <div class="col-9">
-      <select class="px-2" name="example">
-        <option value="">--</option>
-        <option value="01">有給</option>
-        <option value="02">午前休暇</option>
-        <option value="03">午後休暇</option>
-        <option value="04">代休</option>
-      </select>
-    </div>
+</div>
+
+<div class="container">
+  <!--年月日-->
+  <div>
+    <p class="h2"><?php echo insertSlash($date) ?><span class="h5"><?php echo $weeks ?></span></p>
   </div>
+
+  <!--休暇種類-->
   <div class="row div_border pt-3 pb-3">
-    <div class="col-3">出勤/退勤予定</div>
-    <div class="col-2">出勤</div>
-    <div class="col-2">
-      <select class="px-2" name="example">
-        <option value="">--</option>
-        <option value="09">09:00</option>
-        <option value="10">10:00</option>
-        <option value="11">11:00</option>
-        <option value="12">12:00</option>
-        <option value="13">13:00</option>
-        <option value="14">14:00</option>
-        <option value="15">15:00</option>
-        <option value="16">16:00</option>
-        <option value="17">17:00</option>
-        <option value="18">18:00</option>
-        <option value="19">19:00</option>
-        <option value="20">20:00</option>
-        <option value="21">21:00</option>
-      </select>
-    </div>
-    <div class="col-2">退勤</div>
-    <div class="col-3">
-      <select class="px-2" name="example">
-        <option value="">--</option>
-        <option value="09">09:00</option>
-        <option value="10">10:00</option>
-        <option value="11">11:00</option>
-        <option value="12">12:00</option>
-        <option value="13">13:00</option>
-        <option value="14">14:00</option>
-        <option value="15">15:00</option>
-        <option value="16">16:00</option>
-        <option value="17">17:00</option>
-        <option value="18">18:00</option>
-        <option value="19">19:00</option>
-        <option value="20">20:00</option>
-        <option value="21">21:00</option>
+    <div class="col-2">休暇種類</div>
+    <div class="col-5">
+      <select class="form-select" aria-label="Default select">
+        <option value="">選択してください</option>
+        <option value="01">年次有給</option>
+        <option value="02">リフレッシュ休暇</option>
+        <option value="03">夏季休暇</option>
+        <option value="04">アニバーサリー休暇</option>
+        <option value="05">慶弔休暇</option>
       </select>
     </div>
   </div>
+
+  <!--期間-->
   <div class="row div_border pt-3 pb-3">
-    <div class="col-3">休憩予定</div>
-    <div class="col-2">休憩開始</div>
-    <div class="col-2">
-      <select class="px-2" name="example">
-        <option value="">--</option>
-        <option value="09">09:00</option>
-        <option value="10">10:00</option>
-        <option value="11">11:00</option>
-        <option value="12">12:00</option>
-        <option value="13">13:00</option>
-        <option value="14">14:00</option>
-        <option value="15">15:00</option>
-        <option value="16">16:00</option>
-        <option value="17">17:00</option>
-        <option value="18">18:00</option>
-        <option value="19">19:00</option>
-        <option value="20">20:00</option>
-        <option value="21">21:00</option>
-      </select>
+    <div class="col-2">期間</div>
+    <div class="col-4">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="yyyymmdd" maxlength="8"
+        oninput="removeNotNum(this);">
+        <select class="px-3 btn btn-outline-secondary" name="example">
+          <option value="1">全日</option>
+          <option value="2">午前</option>
+          <option value="3">午後</option>
+        </select>
+      </div>
     </div>
-    <div class="col-2">休憩終了</div>
-    <div class="col-3">
-      <select class="px-2" name="example">
-        <option value="">--</option>
-        <option value="09">09:00</option>
-        <option value="10">10:00</option>
-        <option value="11">11:00</option>
-        <option value="12">12:00</option>
-        <option value="13">13:00</option>
-        <option value="14">14:00</option>
-        <option value="15">15:00</option>
-        <option value="16">16:00</option>
-        <option value="17">17:00</option>
-        <option value="18">18:00</option>
-        <option value="19">19:00</option>
-        <option value="20">20:00</option>
-        <option value="21">21:00</option>
-      </select>
+    <div class="col-4">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="yyyymmdd" maxlength="8"
+        oninput="removeNotNum(this);">
+        <select class="px-3 btn btn-outline-secondary" name="example">
+          <option value="1">全日</option>
+          <option value="2">午前</option>
+          <option value="3">午後</option>
+        </select>
+      </div>
     </div>
   </div>
+
+  <!--登録メッセージ-->
   <div class="row div_border pt-3 pb-3">
-    <div class="col-3">申請メッセージ</div>
-    <div class="col-9">
+    <div class="col-2">登録メッセージ</div>
+    <div class="col-8">
       <textarea class="form-control" id="floatingTextarea2" style="height: 100px"></textarea>
     </div>
   </div>
-  <div class="pt-3 pb-3">
-    <button type="submit" class="btn btn-primary">登録</button>
+
+  <!--登録ボタン-->
+  <div>
+    <button type="button" class="btn btn-success m-0">登録</button>
   </div>
-  </div>
+</div>
+
+<!-- BootStrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<!-- sweetalert2 -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="./js/main.js"></script>
+<script>
+  alert('作成中');
+  //--------------------------------------------------
+  //前画面に遷移
+  //--------------------------------------------------
+  const backRedirect = (prm) =>{
+    location.href = './timecard.php?set_date='+prm;
+  }
+</script>
 </body>
 </html>

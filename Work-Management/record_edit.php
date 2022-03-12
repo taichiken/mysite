@@ -2,7 +2,8 @@
 //セッション開始
 session_start();
 
-echo $_SERVER['REQUEST_METHOD'].'(session)';
+//テスト
+//echo $_SERVER['REQUEST_METHOD'].'(session)';
 
 
 //DB接続
@@ -13,6 +14,18 @@ require_once('function.php');
 
 //パラメータ受け取り
 $date = $_GET['set_date'];
+
+
+//--------------------------------------------------
+//曜日取得
+//--------------------------------------------------
+$result = $mysqli->query("
+  select * from T_calendar
+  where date=".$date."
+");
+$row = $result->fetch_array(MYSQLI_ASSOC);
+$weeks = getWeek($row['weeks']);
+$result->close();
 
 
 //--------------------------------------------------
@@ -46,7 +59,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 <html class="no-js" lang="ja">
 <head>
 <meta charset="utf-8">
-<title>カレンダー画面</title>
+<title>打刻編集画面</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- BootStrap -->
@@ -72,12 +85,24 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 </div>
 
 <!--***************************************************************************
+メッセージ（登録処理完了時のみ表示）
+***************************************************************************-->
+<?php if(isset($_SESSION['message'])): ?>
+<div class="alert alert-success">
+  <span class="h4"><?php echo $_SESSION['message'] ?></span>
+</div>
+<?php endif ?>
+
+
+<!--***************************************************************************
 打刻一覧
 ***************************************************************************-->
 <div class="container">
+  <!--年月日-->
   <div>
-    <p class="h2"><?php echo insertSlash($date) ?></p>
+    <p class="h2"><?php echo insertSlash($date) ?><span class="h5"><?php echo $weeks ?></span></p>
   </div>
+
   <table class="table table-bordered align-middle">
     <thead class="bg-dark text-light">
       <tr>
@@ -87,11 +112,18 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
       </tr>
     </thead>
     <tbody>
-      <?php for ($i=0; $i<count($array_pattern); $i++): ?>
+      <?php
+        //ログ件数分表示（※最低4行表示）
+        $cnt=4;
+        if(count($array_pattern) > $cnt){
+          $cnt=count($array_pattern);
+        }
+        for ($i=0; $i<$cnt; $i++):
+      ?>
       <tr>
         <!--打刻パターン-->
         <td>
-          <select class="form-select" name="color">
+          <select class="form-select" name="<?php echo 'set_pattern'.$i ?>">
             <option value="">選択してください</option>
             <option value="1" <?php echo selectPulldown('1',$array_pattern[$i]) ?>>出勤</option>
             <option value="2" <?php echo selectPulldown('2',$array_pattern[$i]) ?>>退勤</option>
@@ -100,14 +132,15 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
           </select>
         </td>
 
-        <!--打刻時間-->
+        <!--打刻時刻-->
         <td>
-          <input type="text" class="form-control" value="<?php echo insertColon($array_time[$i]) ?>" placeholder="hhmm" maxlength="4"
+          <input type="text" class="form-control" value="<?php echo insertColon($array_time[$i]) ?>"
+          name="<?php echo 'set_time'.$i ?>" placeholder="hhmm" maxlength="4"
           oninput="removeNotNum(this);" onblur="insertColon(this);" onfocus="removeColon(this);">
         </td>
 
         <!--削除チェックボックス-->
-        <td><input type="checkbox" name="" value=""></td>
+        <td><input type="checkbox" name="<?php echo 'set_delete'.$i ?>"></td>
       </tr>
 
       <!--打刻ID-->
@@ -116,14 +149,23 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
       <?php endfor ?>
     </tbody>
   </table>
+
+  <!--登録ボタン-->
   <div>
-    <button type="submit" class="btn btn-success m-0">登録</button>
+    <button type="button" class="btn btn-success m-0" onclick="updateLog()">登録</button>
   </div>
 </div>
+
+<!--***************************************************************************
+hidden
+***************************************************************************-->
+<input type="hidden" id="set_date" name="set_date" value="<?php echo $date ?>"></input>
 </form>
 
 <!-- BootStrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<!-- sweetalert2 -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="./js/main.js"></script>
 <script>
   //--------------------------------------------------
@@ -133,6 +175,29 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
     location.href = './timecard.php?set_date='+prm;
   }
 
+  //--------------------------------------------------
+  //メッセージ表示後、更新処理を行う
+  //--------------------------------------------------
+  const updateLog = () =>{
+    Swal.fire({
+      title: '登録しますか?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'OK'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.forms[0].submit();
+      }
+    })
+  }
+
 </script>
 </body>
 </html>
+<?php
+  //セッション削除
+  unset($_SESSION['msg_type']);
+  unset($_SESSION['message']);
+?>

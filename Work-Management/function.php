@@ -11,6 +11,18 @@ function insertColon($prm){
   return $prm;
 }
 
+//--------------------------------------------------
+//コロン外す
+//--------------------------------------------------
+function removeColon($prm){
+  if($prm!=''){
+    $prm = str_replace(':','',$prm);
+    //6桁補正
+    $prm = substr($prm.'00',0,6);
+  }
+return $prm;
+}
+
 
 //--------------------------------------------------
 //スラッシュセット
@@ -32,14 +44,18 @@ function getWorkTime($prm1,$prm2,$prm3,$prm4){
   $work_total=0;
   $rest_total=0;
   if($prm1!=''&&$prm2!=''){
+    $prm1 = substr('000000'.$prm1,-6);
+    $prm2 = substr('000000'.$prm2,-6);
     $work_total = ((substr($prm2,0,2)*60)+substr($prm2,2,2)) - ((substr($prm1,0,2)*60)+substr($prm1,2,2));
   }
   if($prm3!=''&&$prm4!=''){
+    $prm3 = substr('000000'.$prm3,-6);
+    $prm4 = substr('000000'.$prm4,-6);
     $rest_total = ((substr($prm4,0,2)*60)+substr($prm4,2,2)) - ((substr($prm3,0,2)*60)+substr($prm3,2,2));
   }
   $total = $work_total-$rest_total;
   if($total>0){
-    $getWorkTime = insertColon(substr('00'.floor($total/60),-2).substr('00'.floor($total%60),-2));
+    $getWorkTime = insertColon(substr('00'.floor($total/60),-2).substr('00'.floor($total%60),-2).'00');
   }
 
   return $getWorkTime;

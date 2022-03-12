@@ -2,8 +2,6 @@
 //セッション開始
 session_start();
 
-echo $_SERVER['REQUEST_METHOD'].'(session)'.'<br>';
-
 //DB接続
 require_once('db_info.php');
 
@@ -19,10 +17,34 @@ $current_date = $_GET['set_date'];
 if($current_date==''){
   $current_date = date('Ymd');
 }
-//前月・翌月を'YYYYMM01'の形式で取得
-$before_month = substr(date('Ymd', strtotime($current_date.'-1 month')),0,6).'01';
-$next_month = substr(date('Ymd', strtotime($current_date.'+1 month')),0,6).'01';
 
+
+//前月を'YYYYMM01'の形式で取得
+$before_month = 0;
+$result = $mysqli->query("
+  select * from T_calendar
+  where date in (select min(date) from T_calendar where date=".substr(date('Ymd', strtotime($current_date.'-1 month')),0,6)."01)
+  limit 1;
+");
+$row = $result->fetch_array(MYSQLI_ASSOC);
+if($row['date']!=''){
+  $before_month = $row['date'];
+}
+$result->close();
+
+
+//翌月を'YYYYMM01'の形式で取得
+$next_month = 0;
+$result = $mysqli->query("
+  select * from T_calendar
+  where date in (select min(date) from T_calendar where date=".substr(date('Ymd', strtotime($current_date.'+1 month')),0,6)."01)
+  limit 1;
+");
+$row = $result->fetch_array(MYSQLI_ASSOC);
+if($row['date']!=''){
+  $next_month = $row['date'];
+}
+$result->close();
 
 //--------------------------------------------------
 //月初取得
@@ -82,7 +104,7 @@ $result = $mysqli->query("
 <html class="no-js" lang="ja">
 <head>
 <meta charset="utf-8">
-<title>カレンダー画面</title>
+<title>タイムカード画面</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- BootStrap -->
@@ -102,7 +124,6 @@ $result = $mysqli->query("
   <div class="header-menu">
     <ul>
       <li><a href="./index.php"><i class="fa-solid fa-house"></i></a></li>
-      <li><a href="./index.php"><i class="fa-solid fa-angle-left"></i>&nbsp;戻る</a></li>
     </ul>
   </div>
 </div>
@@ -147,7 +168,7 @@ $result = $mysqli->query("
           </button>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="#" onclick="nextRedirect('1',<?php echo $row['date'] ?>);">打刻編集</a></li>
-            <li><a class="dropdown-item" href="#" onclick="nextRedirect('2',<?php echo $row['date'] ?>);">休暇申請</a></li>
+            <li><a class="dropdown-item" href="#" onclick="nextRedirect('2',<?php echo $row['date'] ?>);">休暇登録</a></li>
           </ul>
         </th>
         <!--日付-->
@@ -155,7 +176,7 @@ $result = $mysqli->query("
           <?php echo insertSlash($row['date']).getWeek($row['weeks']) ?>
         </td>
         <!--スケジュール-->
-        <td>通常勤務(仮)</td>
+        <td>通常勤務</td>
         <!--出勤-->
         <td><?php echo insertColon($row['work_fr_time']) ?></td>
         <!--退勤-->
@@ -183,7 +204,7 @@ $result = $mysqli->query("
     if(prm1==1){
       location.href = './record_edit.php?set_date='+prm2;
     }else{
-      location.href = './input.php?'+prm2;
+      location.href = './input.php?set_date='+prm2;
     }
   }
 
@@ -191,7 +212,9 @@ $result = $mysqli->query("
   //指定月へ切り替え
   //--------------------------------------------------
   const changeMonth = (prm) =>{
-    location.href = './timecard.php?set_date='+prm;
+    if(prm!=0){
+      location.href = './timecard.php?set_date='+prm;
+    }
   }
 
 </script>

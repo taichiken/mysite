@@ -32,6 +32,7 @@ const insertColon = ($prm) =>{
   $prm.value = return_value;
 }
 
+
 //--------------------------------------------------
 //コロン外す
 //--------------------------------------------------
@@ -39,6 +40,7 @@ const removeColon = ($prm) =>{
   let return_value = $prm.value.replace(":","");
   $prm.value = return_value;
 }
+
 
 //--------------------------------------------------
 //数値以外除外
