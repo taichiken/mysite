@@ -3,7 +3,7 @@
 session_start();
 
 //テスト
-//echo $_SERVER['REQUEST_METHOD'].'(session)';
+echo $_SERVER['REQUEST_METHOD'].'(session)';
 
 
 //DB接続
@@ -43,6 +43,7 @@ $result->close();
 <meta name="theme-color" content="#fafafa">
 </head>
 <body>
+<form action="" method="POST">
 
 <!--***************************************************************************
 ヘッダー
@@ -83,7 +84,7 @@ $result->close();
     <div class="col-4">
       <div class="input-group">
         <input type="text" class="form-control" placeholder="yyyymmdd" maxlength="8"
-        oninput="removeNotNum(this);">
+        oninput="removeNotNum(this);" onblur="insertSlash(this);" onfocus="removeSlash(this);">
         <select class="px-3 btn btn-outline-secondary" name="example">
           <option value="1">全日</option>
           <option value="2">午前</option>
@@ -94,7 +95,7 @@ $result->close();
     <div class="col-4">
       <div class="input-group">
         <input type="text" class="form-control" placeholder="yyyymmdd" maxlength="8"
-        oninput="removeNotNum(this);">
+        oninput="removeNotNum(this);" onblur="insertSlash(this);" onfocus="removeSlash(this);">
         <select class="px-3 btn btn-outline-secondary" name="example">
           <option value="1">全日</option>
           <option value="2">午前</option>
@@ -114,9 +115,10 @@ $result->close();
 
   <!--登録ボタン-->
   <div>
-    <button type="button" class="btn btn-success m-0">登録</button>
+    <button type="button" class="btn btn-success m-0" onclick="updateLog()">登録</button>
   </div>
 </div>
+</form>
 
 <!-- BootStrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -130,6 +132,24 @@ $result->close();
   //--------------------------------------------------
   const backRedirect = (prm) =>{
     location.href = './timecard.php?set_date='+prm;
+  }
+
+  //--------------------------------------------------
+  //メッセージ表示後、更新処理を行う
+  //--------------------------------------------------
+  const updateLog = () =>{
+    Swal.fire({
+      title: '登録しますか?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'OK'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.forms[0].submit();
+      }
+    })
   }
 </script>
 </body>

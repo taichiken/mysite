@@ -10,8 +10,8 @@ const setNowTime = () =>{
   let nowMin   = ('0'+newDate.getMinutes()).slice(-2);
   let nowSec   = ('0'+newDate.getSeconds()).slice(-2);
 
-  document.getElementById('get_date').textContent=nowYear + "年" + nowMonth + "月" + nowDay +'日';
-  document.getElementById('get_time').textContent=nowHour + ":" + nowMin + ":" + nowSec;
+  document.getElementById('get_date').textContent=nowYear + '年' + nowMonth + '月' + nowDay +'日';
+  document.getElementById('get_time').textContent=nowHour + ':' + nowMin + ':' + nowSec;
   document.getElementById('set_date').value=nowYear + nowMonth + nowDay;
   document.getElementById('set_time').value=nowHour + nowMin + nowSec;
   refresh();
@@ -37,7 +37,7 @@ const insertColon = ($prm) =>{
 //コロン外す
 //--------------------------------------------------
 const removeColon = ($prm) =>{
-  let return_value = $prm.value.replace(":","");
+  let return_value = $prm.value.replace(':','');
   $prm.value = return_value;
 }
 
@@ -46,6 +46,27 @@ const removeColon = ($prm) =>{
 //数値以外除外
 //--------------------------------------------------
 const removeNotNum = ($prm) =>{
-  let return_value = $prm.value.replace(/[^0-9]/,"");
+  let return_value = $prm.value.replace(/[^0-9]/,'');
+  $prm.value = return_value;
+}
+
+
+//--------------------------------------------------
+//スラッシュセット
+//--------------------------------------------------
+const insertSlash = ($prm) =>{
+  let return_value = '';
+  if($prm.value.length==8){
+    return_value = $prm.value.substr(0,4)+'/'+$prm.value.substr(4,2)+'/'+$prm.value.substr(6,2);
+  }
+  $prm.value = return_value;
+}
+
+
+//--------------------------------------------------
+//スラッシュ外す
+//--------------------------------------------------
+const removeSlash = ($prm) =>{
+  let return_value = $prm.value.split('/').join('');
   $prm.value = return_value;
 }
