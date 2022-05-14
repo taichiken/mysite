@@ -9,54 +9,72 @@ require_once('db_info.php');
 require_once('function.php');
 
 //パラメータ受け取り
+$update_ptn = $_SESSION['form']['set_update_ptn'];
 $count = $_SESSION['form']['set_count'];
 $date = $_SESSION['form']['set_date'];
 
-for ($i=0; $i<=$count; $i++){
+echo $update_ptn.'<br>';
+echo $count.'<br>';
+echo $date.'<br>';
 
-  //パラメータ受け取り
-  $id = $_SESSION['form']['set_id'.$i];
-  $pattern = $_SESSION['form']['set_pattern'.$i];
-  $time = removeColon($_SESSION['form']['set_time'.$i]);
-  $delete = $_SESSION['form']['set_delete'.$i];
+//--------------------------------------------------
+//「打刻編集画面」からの遷移
+//--------------------------------------------------
+if($update_ptn=='stamp'){
+
+  for ($i=0; $i<=$count; $i++){
+
+    //パラメータ受け取り
+    $id = $_SESSION['form']['set_id'.$i];
+    $pattern = $_SESSION['form']['set_pattern'.$i];
+    $time = removeColon($_SESSION['form']['set_time'.$i]);
+    $delete = $_SESSION['form']['set_delete'.$i];
+
+      //--------------------------------------------------
+      //T_logへのinsert処理
+      //--------------------------------------------------
+    if($id==''){
+      if($pattern!='' && $time!='' && $delete==''){
+        $mysqli->query("insert into T_log(date, time, pattern) values('$date', '$time', '$pattern')");
+      }
 
     //--------------------------------------------------
-    //T_logへのinsert処理
+    //T_logへのdelete処理
     //--------------------------------------------------
-  if($id==''){
-    if($pattern!='' && $time!='' && $delete==''){
-      $mysqli->query("insert into T_log(date, time, pattern) values('$date', '$time', '$pattern')");
+    }elseif($delete=='on'){
+      $mysqli->query("delete from T_log where id = $id");
+
+    //--------------------------------------------------
+    //T_logへのupdate処理
+    //--------------------------------------------------
+    }else{
+      $mysqli->query("
+        update T_log
+        set
+          time = $time,
+          pattern = $pattern
+        where id = $id
+        and not (
+          left(right(concat('000000',time),6),4) = left(right(concat('000000',$time),6),4) and
+          pattern = $pattern
+        )
+      ");
     }
-
-  //--------------------------------------------------
-  //T_logへのdelete処理
-  //--------------------------------------------------
-  }elseif($delete=='on'){
-    $mysqli->query("delete from T_log where id = $id");
-
-  //--------------------------------------------------
-  //T_logへのupdate処理
-  //--------------------------------------------------
-  }else{
-    $mysqli->query("
-      update T_log
-      set
-        time = $time,
-        pattern = $pattern
-      where id = $id
-      and not (
-        left(right(concat('000000',time),6),4) = left(right(concat('000000',$time),6),4) and
-        pattern = $pattern
-      )
-    ");
   }
+
+  //セッション書き込み
+  $_SESSION['msg_type'] = "success";
+  $_SESSION['message'] = "登録しました！！";
+
+  //リダイレクト処理
+  header('Location: record_edit.php?set_date='.$date);
+  exit();
+
+
+//--------------------------------------------------
+//「休暇登録画面」からの遷移
+//--------------------------------------------------
+}elseif($update_ptn=='leave'){
+
 }
-
-//セッション書き込み
-$_SESSION['msg_type'] = "success";
-$_SESSION['message'] = "登録しました！！";
-
-//リダイレクト処理
-header('Location: record_edit.php?set_date='.$date);
-exit();
 ?>

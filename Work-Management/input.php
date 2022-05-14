@@ -27,6 +27,14 @@ $row = $result->fetch_array(MYSQLI_ASSOC);
 $weeks = getWeek($row['weeks']);
 $result->close();
 
+//--------------------------------------------------
+//休暇の登録処理
+//--------------------------------------------------
+if($_SERVER['REQUEST_METHOD']=='POST'){
+  $_SESSION['form'] = $_POST;
+  header('Location: update.php');
+  exit();
+}
 ?>
 <!doctype html>
 <html class="no-js" lang="ja">
@@ -70,10 +78,12 @@ $result->close();
       <select class="form-select" aria-label="Default select">
         <option value="">選択してください</option>
         <option value="01">年次有給</option>
-        <option value="02">リフレッシュ休暇</option>
-        <option value="03">夏季休暇</option>
-        <option value="04">アニバーサリー休暇</option>
-        <option value="05">慶弔休暇</option>
+        <option value="02">産前休暇</option>
+        <option value="03">産後休暇</option>
+        <option value="04">育児休暇</option>
+        <option value="05">誕生日休暇</option>
+        <option value="06">慶弔休暇</option>
+        <option value="07">リフレッシュ休暇</option>
       </select>
     </div>
   </div>
@@ -118,6 +128,12 @@ $result->close();
     <button type="button" class="btn btn-success m-0" onclick="updateLog()">登録</button>
   </div>
 </div>
+
+<!--***************************************************************************
+hidden
+***************************************************************************-->
+<input type="hidden" name="set_update_ptn" value="leave"></input><!--stamp:打刻編集、leave:休暇編集-->
+<input type="hidden" id="set_update_ptn" value="kyuka"></input>
 </form>
 
 <!-- BootStrap -->
@@ -126,7 +142,6 @@ $result->close();
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="./js/main.js"></script>
 <script>
-  alert('作成中');
   //--------------------------------------------------
   //前画面に遷移
   //--------------------------------------------------

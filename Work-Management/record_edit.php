@@ -159,6 +159,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 <!--***************************************************************************
 hidden
 ***************************************************************************-->
+<input type="hidden" name="set_update_ptn" value="stamp"></input><!--stamp:打刻編集、leave:休暇編集-->
 <input type="hidden" id="set_date" name="set_date" value="<?php echo $date ?>"></input>
 </form>
 

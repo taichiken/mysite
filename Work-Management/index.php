@@ -105,6 +105,7 @@ hidden
 </html>
 <?php
   //セッション削除
+  //出退勤ボタン押下時のメッセージクリアする
   unset($_SESSION['msg_type']);
   unset($_SESSION['message']);
 ?>
