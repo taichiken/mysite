@@ -2,10 +2,6 @@
 //セッション開始
 session_start();
 
-//テスト
-echo $_SERVER['REQUEST_METHOD'].'(session)';
-
-
 //DB接続
 require_once('db_info.php');
 
@@ -27,6 +23,7 @@ $row = $result->fetch_array(MYSQLI_ASSOC);
 $weeks = getWeek($row['weeks']);
 $result->close();
 
+
 //--------------------------------------------------
 //休暇の登録処理
 //--------------------------------------------------
@@ -35,6 +32,29 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
   header('Location: update.php');
   exit();
 }
+
+
+//--------------------------------------------------
+//休暇申請情報を配列にセット
+//--------------------------------------------------
+$result = $mysqli->query("
+  select * from T_leave
+  where leave_date = ".$date."
+  limit 2"
+);
+$array_leave_ptn = array();
+$array_leave_type = array();
+$array_leave_msg = array();
+while($row = $result->fetch_assoc()){
+  array_push($array_leave_ptn,$row['leave_ptn']);   /*--休暇パターン--*/
+  array_push($array_leave_type,$row['leave_type']); /*--休暇種類--*/
+  array_push($array_leave_msg,$row['leave_msg']);   /*--休暇メッセージ--*/
+}
+$result->close();
+
+
+
+
 ?>
 <!doctype html>
 <html class="no-js" lang="ja">
@@ -65,61 +85,86 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
   </div>
 </div>
 
+
+<!--***************************************************************************
+メッセージ（登録処理完了時のみ表示）
+***************************************************************************-->
+<?php if(isset($_SESSION['message'])): ?>
+<div class="alert alert-<?=$_SESSION['msg_type']?>">
+  <span class="h4"><?php echo $_SESSION['message'] ?></span>
+</div>
+<?php endif ?>
+
+
+<!--***************************************************************************
+休暇申請欄
+***************************************************************************-->
 <div class="container">
   <!--年月日-->
   <div>
     <p class="h2"><?php echo insertSlash($date) ?><span class="h5"><?php echo $weeks ?></span></p>
   </div>
 
-  <!--休暇種類-->
+  <!--休暇①-->
   <div class="row div_border pt-3 pb-3">
-    <div class="col-2">休暇種類</div>
-    <div class="col-5">
-      <select class="form-select" aria-label="Default select">
+    <div class="col-2">休暇①</div>
+    <!--区分-->
+    <div class="col-3">
+      <select class="form-select" name="set_leave_ptn1">
         <option value="">選択してください</option>
-        <option value="01">年次有給</option>
-        <option value="02">産前休暇</option>
-        <option value="03">産後休暇</option>
-        <option value="04">育児休暇</option>
-        <option value="05">誕生日休暇</option>
-        <option value="06">慶弔休暇</option>
-        <option value="07">リフレッシュ休暇</option>
+        <option value="1" <?php echo selectPulldown('1',$array_leave_ptn[0]) ?>>全日</option>
+        <option value="2" <?php echo selectPulldown('2',$array_leave_ptn[0]) ?>>午前</option>
+        <option value="3" <?php echo selectPulldown('3',$array_leave_ptn[0]) ?>>午後</option>
+      </select>
+    </div>
+    <!--休暇種類-->
+    <div class="col-5">
+      <select class="form-select" name="set_leave_type1">
+        <option value="">選択してください</option>
+        <option value="01" <?php echo selectPulldown('01',$array_leave_type[0]) ?>>年次有給</option>
+        <option value="02" <?php echo selectPulldown('02',$array_leave_type[0]) ?>>産前休暇</option>
+        <option value="03" <?php echo selectPulldown('03',$array_leave_type[0]) ?>>産後休暇</option>
+        <option value="04" <?php echo selectPulldown('04',$array_leave_type[0]) ?>>育児休暇</option>
+        <option value="05" <?php echo selectPulldown('05',$array_leave_type[0]) ?>>誕生日休暇</option>
+        <option value="06" <?php echo selectPulldown('06',$array_leave_type[0]) ?>>慶弔休暇</option>
+        <option value="07" <?php echo selectPulldown('07',$array_leave_type[0]) ?>>リフレッシュ休暇</option>
       </select>
     </div>
   </div>
 
-  <!--期間-->
+  <!--休暇②-->
   <div class="row div_border pt-3 pb-3">
-    <div class="col-2">期間</div>
-    <div class="col-4">
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="yyyymmdd" maxlength="8"
-        oninput="removeNotNum(this);" onblur="insertSlash(this);" onfocus="removeSlash(this);">
-        <select class="px-3 btn btn-outline-secondary" name="example">
-          <option value="1">全日</option>
-          <option value="2">午前</option>
-          <option value="3">午後</option>
-        </select>
-      </div>
+    <div class="col-2">休暇②</div>
+    <!--区分-->
+    <div class="col-3">
+      <select class="form-select" name="set_leave_ptn2">
+        <option value="">選択してください</option>
+        <option value="1" <?php echo selectPulldown('1',$array_leave_ptn[1]) ?>>全日</option>
+        <option value="2" <?php echo selectPulldown('2',$array_leave_ptn[1]) ?>>午前</option>
+        <option value="3" <?php echo selectPulldown('3',$array_leave_ptn[1]) ?>>午後</option>
+      </select>
     </div>
-    <div class="col-4">
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="yyyymmdd" maxlength="8"
-        oninput="removeNotNum(this);" onblur="insertSlash(this);" onfocus="removeSlash(this);">
-        <select class="px-3 btn btn-outline-secondary" name="example">
-          <option value="1">全日</option>
-          <option value="2">午前</option>
-          <option value="3">午後</option>
-        </select>
-      </div>
+    <!--休暇種類-->
+    <div class="col-5">
+      <select class="form-select" name="set_leave_type2">
+        <option value="">選択してください</option>
+        <option value="01" <?php echo selectPulldown('01',$array_leave_type[1]) ?>>年次有給</option>
+        <option value="02" <?php echo selectPulldown('02',$array_leave_type[1]) ?>>産前休暇</option>
+        <option value="03" <?php echo selectPulldown('03',$array_leave_type[1]) ?>>産後休暇</option>
+        <option value="04" <?php echo selectPulldown('04',$array_leave_type[1]) ?>>育児休暇</option>
+        <option value="05" <?php echo selectPulldown('05',$array_leave_type[1]) ?>>誕生日休暇</option>
+        <option value="06" <?php echo selectPulldown('06',$array_leave_type[1]) ?>>慶弔休暇</option>
+        <option value="07" <?php echo selectPulldown('07',$array_leave_type[1]) ?>>リフレッシュ休暇</option>
+      </select>
     </div>
   </div>
+
 
   <!--登録メッセージ-->
   <div class="row div_border pt-3 pb-3">
     <div class="col-2">登録メッセージ</div>
     <div class="col-8">
-      <textarea class="form-control" id="floatingTextarea2" style="height: 100px"></textarea>
+      <textarea class="form-control" name="set_leave_msg" id="floatingTextarea2" style="height: 100px"><?php echo $array_leave_msg[1] ?></textarea>
     </div>
   </div>
 
@@ -133,7 +178,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 hidden
 ***************************************************************************-->
 <input type="hidden" name="set_update_ptn" value="leave"></input><!--stamp:打刻編集、leave:休暇編集-->
-<input type="hidden" id="set_update_ptn" value="kyuka"></input>
+<input type="hidden" id="set_date" name="set_date" value="<?php echo $date ?>"></input>
 </form>
 
 <!-- BootStrap -->

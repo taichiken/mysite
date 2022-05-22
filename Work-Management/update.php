@@ -9,18 +9,24 @@ require_once('db_info.php');
 require_once('function.php');
 
 //パラメータ受け取り
-$update_ptn = $_SESSION['form']['set_update_ptn'];
-$count = $_SESSION['form']['set_count'];
+$update_ptn = $_SESSION['form']['set_update_ptn']; /*--stamp:打刻編集、leave:休暇編集--*/
 $date = $_SESSION['form']['set_date'];
-
+$current_date = date('Ymd');
 echo $update_ptn.'<br>';
-echo $count.'<br>';
 echo $date.'<br>';
+echo $current_date.'<br>';
+
+//画面表示メッセージ用パラメータ
+$dsp_msgtype='success';
+$dsp_message='登録しました！！';
 
 //--------------------------------------------------
 //「打刻編集画面」からの遷移
 //--------------------------------------------------
 if($update_ptn=='stamp'){
+
+  //パラメータ受け取り
+  $count = $_SESSION['form']['set_count'];
 
   for ($i=0; $i<=$count; $i++){
 
@@ -63,8 +69,8 @@ if($update_ptn=='stamp'){
   }
 
   //セッション書き込み
-  $_SESSION['msg_type'] = "success";
-  $_SESSION['message'] = "登録しました！！";
+  $_SESSION['msg_type'] = $dsp_msgtype;
+  $_SESSION['message'] = $dsp_message;
 
   //リダイレクト処理
   header('Location: record_edit.php?set_date='.$date);
@@ -75,6 +81,54 @@ if($update_ptn=='stamp'){
 //「休暇登録画面」からの遷移
 //--------------------------------------------------
 }elseif($update_ptn=='leave'){
+  //パラメータ受け取り
+  $leave_type1 = removeSlash($_SESSION['form']['set_leave_type1']);  /*--休暇種類１--*/
+  $leave_ptn1 = removeSlash($_SESSION['form']['set_leave_ptn1']);    /*--休暇パターン１--*/
+  $leave_type2 = removeSlash($_SESSION['form']['set_leave_type2']);  /*--休暇種類１--*/
+  $leave_ptn2 = removeSlash($_SESSION['form']['set_leave_ptn2']);    /*--休暇パターン2--*/
+  $leave_msg = removeSlash($_SESSION['form']['set_leave_msg']);      /*--休暇メッセージ--*/
 
+  //--------------------------------------------------
+  //休暇登録処理
+  //--------------------------------------------------
+  if(($leave_type1!='' && $leave_ptn1=='')||($leave_type1=='' && $leave_ptn1!='')){
+    $dsp_msgtype='danger';
+    $dsp_message='1行目の入力内容に不備があります';
+  }elseif(($leave_type2!='' && $leave_ptn2=='')||($leave_type2=='' && $leave_ptn2!='')){
+    $dsp_msgtype='danger';
+    $dsp_message='2行目の入力内容に不備があります';
+  }elseif($leave_ptn1!='' && $leave_ptn2!=''){
+    if(($leave_ptn1==$leave_ptn2)||($leave_ptn1=='1' || $leave_ptn2=='1')){
+      $dsp_msgtype='danger';
+      $dsp_message='休暇単位に不備があります';
+    }
+  }
+
+  if($dsp_msgtype=='success'){
+    //T_leaveから対象日の休暇をdelete
+    $mysqli->query("delete from T_leave where leave_date = $date");
+
+    //T_leaveへのinsert処理
+    if($leave_ptn1!=''&&$leave_type1!=''){
+      $mysqli->query("
+        insert into T_leave(leave_date, leave_ptn, leave_type, leave_msg, appl_date)
+        values('$date','$leave_ptn1','$leave_type1','$leave_msg','$current_date')
+      ");
+    }
+    if($leave_ptn2!=''&&$leave_type2!=''){
+      $mysqli->query("
+        insert into T_leave(leave_date, leave_ptn, leave_type, leave_msg, appl_date)
+        values('$date','$leave_ptn2','$leave_type2','$leave_msg','$current_date')
+      ");
+    }
+  }
+
+  //セッション書き込み
+  $_SESSION['msg_type'] = $dsp_msgtype;
+  $_SESSION['message'] = $dsp_message;
+
+  //リダイレクト処理
+  header('Location: input.php?set_date='.$date);
+  exit();
 }
 ?>
