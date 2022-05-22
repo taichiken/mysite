@@ -12,9 +12,6 @@ require_once('function.php');
 $update_ptn = $_SESSION['form']['set_update_ptn']; /*--stamp:打刻編集、leave:休暇編集--*/
 $date = $_SESSION['form']['set_date'];
 $current_date = date('Ymd');
-echo $update_ptn.'<br>';
-echo $date.'<br>';
-echo $current_date.'<br>';
 
 //画面表示メッセージ用パラメータ
 $dsp_msgtype='success';
@@ -91,6 +88,8 @@ if($update_ptn=='stamp'){
   //--------------------------------------------------
   //休暇登録処理
   //--------------------------------------------------
+
+  //エラーチェック
   if(($leave_type1!='' && $leave_ptn1=='')||($leave_type1=='' && $leave_ptn1!='')){
     $dsp_msgtype='danger';
     $dsp_message='1行目の入力内容に不備があります';
@@ -104,6 +103,7 @@ if($update_ptn=='stamp'){
     }
   }
 
+  //エラーがない場合の更新処理
   if($dsp_msgtype=='success'){
     //T_leaveから対象日の休暇をdelete
     $mysqli->query("delete from T_leave where leave_date = $date");
